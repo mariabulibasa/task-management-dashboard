@@ -19,7 +19,7 @@ export function mapDummyJsonTodoToTask(todo: DummyJsonTodo): Task {
   return {
     id: String(todo.id),
     title: todo.todo,
-    description: `Details for this task: ${todo.todo}`,
+    description: "Provide an overview of the task and related details.",
     status: mapCompletedToStatus(todo),
     assigneeId: String(todo.userId),
   };

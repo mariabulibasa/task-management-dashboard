@@ -15,6 +15,6 @@ export interface CreateTaskInput {
   assigneeId: string;
 }
 
-export interface UpdateTaskInput {
+export interface UpdateTaskInput extends CreateTaskInput {
   id: string;
 }
