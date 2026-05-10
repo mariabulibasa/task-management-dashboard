@@ -13,6 +13,6 @@ export type TaskSortOption =
 
 export interface TaskFilters {
   searchTerm: string;
-  status: TaskStatusFilter;
-  assigneeId: string;
+  statusFilter: TaskStatusFilter;
+  assigneeFilter: string;
 }

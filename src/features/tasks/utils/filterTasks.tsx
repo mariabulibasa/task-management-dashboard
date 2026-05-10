@@ -1,10 +1,29 @@
 import type { Task } from "../types/task.types";
+import type { TaskFilters } from "../types/taskControls.types";
 
-export function filterTaskBySearch(tasks: Task[], searchTerm: string): Task[] {
+interface FilterTaskProps extends TaskFilters {
+  tasks: Task[];
+}
+
+export function filterTasks({
+  tasks,
+  searchTerm,
+  statusFilter,
+  assigneeFilter,
+}: FilterTaskProps): Task[] {
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
-  if (!normalizedSearchTerm) return tasks;
 
-  return tasks.filter((task) =>
-    task.title.toLowerCase().includes(normalizedSearchTerm),
-  );
+  return tasks.filter((task) => {
+    const matchesSearch =
+      !normalizedSearchTerm ||
+      task.title.toLowerCase().includes(normalizedSearchTerm);
+
+    const matchesStatus =
+      statusFilter === "all" || task.status === statusFilter;
+
+    const matchAssignee =
+      assigneeFilter === "all" || task.assigneeId === assigneeFilter;
+
+    return matchesSearch && matchesStatus && matchAssignee;
+  });
 }

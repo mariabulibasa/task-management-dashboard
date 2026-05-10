@@ -1,21 +1,36 @@
-import { Search, ListFilter, Plus } from "lucide-react";
-import type { TaskSortOption } from "../types/taskControls.types";
+import { Search, Plus } from "lucide-react";
+import type {
+  TaskSortOption,
+  TaskStatusFilter,
+} from "../types/taskControls.types";
 import { TaskSortControl } from "./TaskSortControl";
+import { TaskFilterControl } from "./TaskFilterControl";
+import type { Assignee } from "../../assignees/types/assignees.types";
 
 interface TaskTableToolbarProps {
+  assignees: Assignee[];
   onNewTask: () => void;
   sortOption: TaskSortOption;
   onSortChange: (sortOption: TaskSortOption) => void;
   searchTerm: string;
   onSearchChange: (searchTerm: string) => void;
+  statusFilter: TaskStatusFilter;
+  onStatusFilterChange: (statusFilter: TaskStatusFilter) => void;
+  assigneeFilter: string;
+  onAssigneeFilterChange: (assigneeFilter: string) => void;
 }
 
 export function TaskTableToolbar({
+  assignees,
   onNewTask,
   sortOption,
   onSortChange,
   searchTerm,
   onSearchChange,
+  statusFilter,
+  onStatusFilterChange,
+  assigneeFilter,
+  onAssigneeFilterChange,
 }: TaskTableToolbarProps) {
   return (
     <div className="ml-auto flex items-center gap-3">
@@ -31,14 +46,13 @@ export function TaskTableToolbar({
         />
       </label>
 
-      <button
-        type="button"
-        disabled
-        className="rounded-md p-1.5 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900 disabled:cursor-not-allowed"
-        aria-label="Filter tasks"
-      >
-        <ListFilter size={16} />
-      </button>
+      <TaskFilterControl
+        assignees={assignees}
+        statusFilter={statusFilter}
+        onStatusFilterChange={onStatusFilterChange}
+        assigneeFilter={assigneeFilter}
+        onAssigneeFilterChange={onAssigneeFilterChange}
+      />
 
       <TaskSortControl sortOption={sortOption} onSortChange={onSortChange} />
 

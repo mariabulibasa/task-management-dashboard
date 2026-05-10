@@ -50,22 +50,31 @@ export function TaskSortControl({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full z-20 mt-2 w-56 rounded-xl border border-neutral-200 bg-white p-1 shadow-lg">
-          {TASK_SORT_OPTIONS.map((option) => (
-            <button
-              key={option}
-              type="button"
-              onClick={() => handleSelectSort(option)}
-              className={`w-full rounded-lg px-3 py-2 text-left text-sm transition hover:bg-neutral-100 ${
-                sortOption === option
-                  ? "bg-neutral-100 font-medium text-neutral-900"
-                  : "text-neutral-600"
-              }`}
-            >
-              {TASK_SORT_LABELS[option]}
-            </button>
-          ))}
-        </div>
+        <>
+          <button
+            type="button"
+            aria-label="Close sort dropdown"
+            onClick={() => setIsOpen(false)}
+            className="fixed inset-0 z-10 cursor-default"
+          />
+
+          <div className="absolute right-0 top-full z-20 mt-2 w-56 rounded-xl border border-neutral-200 bg-white p-1 shadow-lg">
+            {TASK_SORT_OPTIONS.map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => handleSelectSort(option)}
+                className={`w-full rounded-lg px-3 py-2 text-left text-sm transition hover:bg-neutral-100 ${
+                  sortOption === option
+                    ? "bg-neutral-100 font-medium text-neutral-900"
+                    : "text-neutral-600"
+                }`}
+              >
+                {TASK_SORT_LABELS[option]}
+              </button>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

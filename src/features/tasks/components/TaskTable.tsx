@@ -1,7 +1,10 @@
 import type { Assignee } from "../../assignees/types/assignees.types";
 import { findAssigneeById } from "../../assignees/utils/assignee.utils";
 import type { Task } from "../types/task.types";
-import type { TaskSortOption } from "../types/taskControls.types";
+import type {
+  TaskSortOption,
+  TaskStatusFilter,
+} from "../types/taskControls.types";
 import { TaskStatusBadge } from "./TaskStatusBadge";
 import { TaskTableToolbar } from "./TaskTableToolbar";
 import { Ellipsis } from "lucide-react";
@@ -15,6 +18,10 @@ interface TaskTableProps {
   onSortChange: (sortOption: TaskSortOption) => void;
   searchTerm: string;
   onSearchChange: (searchTerm: string) => void;
+  statusFilter: TaskStatusFilter;
+  onStatusFilterChange: (statusFilter: TaskStatusFilter) => void;
+  assigneeFilter: string;
+  onAssigneeFilterChange: (assigneeFilter: string) => void;
 }
 
 export function TaskTable({
@@ -26,9 +33,13 @@ export function TaskTable({
   onSortChange,
   searchTerm,
   onSearchChange,
+  statusFilter,
+  onStatusFilterChange,
+  assigneeFilter,
+  onAssigneeFilterChange,
 }: TaskTableProps) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
+    <section className="relative rounded-2xl border border-neutral-200 bg-white shadow-sm">
       <div className="border-b border-neutral-200 px-5 py-4">
         <div className="flex items-center justify-between gap-8">
           <div className="shrink-0">
@@ -39,22 +50,25 @@ export function TaskTable({
           </div>
 
           <TaskTableToolbar
+            assignees={assignees}
             onNewTask={onNewTask}
             sortOption={sortOption}
             onSortChange={onSortChange}
             searchTerm={searchTerm}
             onSearchChange={onSearchChange}
+            statusFilter={statusFilter}
+            onStatusFilterChange={onStatusFilterChange}
+            assigneeFilter={assigneeFilter}
+            onAssigneeFilterChange={onAssigneeFilterChange}
           />
         </div>
       </div>
-
       <div className="grid grid-cols-[96px_1.5fr_160px_220px] border-b border-neutral-200 bg-neutral-50 px-5 py-3 text-xs font-medium uppercase tracking-wide text-neutral-500">
         <div />
         <div>Task name</div>
         <div>Status</div>
         <div>Assignee</div>
       </div>
-
       <div className="divide-y divide-neutral-100">
         {tasks.length === 0 ? (
           <div className="px-5 py-10 text-center">
@@ -68,7 +82,7 @@ export function TaskTable({
             return (
               <div
                 key={task.id}
-                className="group grid grid-cols-[96px_1.5fr_160px_220px] items-center gap-3 px-5 py-4 transition bg-white"
+                className="group grid grid-cols-[96px_1.5fr_160px_220px] items-center gap-3 px-5 py-4 transition bg-white last:rounded-b-2xl"
               >
                 <div className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
                   <button
