@@ -6,12 +6,16 @@ interface TaskTableToolbarProps {
   onNewTask: () => void;
   sortOption: TaskSortOption;
   onSortChange: (sortOption: TaskSortOption) => void;
+  searchTerm: string;
+  onSearchChange: (searchTerm: string) => void;
 }
 
 export function TaskTableToolbar({
   onNewTask,
   sortOption,
   onSortChange,
+  searchTerm,
+  onSearchChange,
 }: TaskTableToolbarProps) {
   return (
     <div className="ml-auto flex items-center gap-3">
@@ -21,8 +25,9 @@ export function TaskTableToolbar({
         <input
           type="text"
           placeholder="Search tasks..."
-          disabled
-          className="w-full bg-transparent text-sm text-neutral-700 outline-none placeholder:text-neutral-400 disabled:cursor-not-allowed"
+          value={searchTerm}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="w-full bg-transparent text-sm text-neutral-700 outline-none placeholder:text-neutral-400"
         />
       </label>
 

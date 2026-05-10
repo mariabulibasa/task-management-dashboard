@@ -13,6 +13,8 @@ interface TaskTableProps {
   onOpenTaskDetails: (taskId: string) => void;
   sortOption: TaskSortOption;
   onSortChange: (sortOption: TaskSortOption) => void;
+  searchTerm: string;
+  onSearchChange: (searchTerm: string) => void;
 }
 
 export function TaskTable({
@@ -22,6 +24,8 @@ export function TaskTable({
   onOpenTaskDetails,
   sortOption,
   onSortChange,
+  searchTerm,
+  onSearchChange,
 }: TaskTableProps) {
   return (
     <section className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
@@ -38,6 +42,8 @@ export function TaskTable({
             onNewTask={onNewTask}
             sortOption={sortOption}
             onSortChange={onSortChange}
+            searchTerm={searchTerm}
+            onSearchChange={onSearchChange}
           />
         </div>
       </div>

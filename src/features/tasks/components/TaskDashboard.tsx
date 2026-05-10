@@ -6,10 +6,12 @@ import { TaskDetailsPanel } from "./TaskDetailsPanel";
 import { findAssigneeById } from "../../assignees/utils/assignee.utils";
 import type { TaskSortOption } from "../types/taskControls.types";
 import { sortTasks } from "../utils/sortTasks";
+import { filterTaskBySearch } from "../utils/filterTasks";
 
 export function TaskDashboard() {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [sortOption, setSortOption] = useState<TaskSortOption>("default");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const taskQuery = useTasks();
   const assigneeQuery = useAssignees();
@@ -18,8 +20,9 @@ export function TaskDashboard() {
   const assignees = assigneeQuery.data ?? [];
 
   const visibleTasks = useMemo(() => {
-    return sortTasks(tasks, assignees, sortOption);
-  }, [tasks, assignees, sortOption]);
+    const filteredTasks = filterTaskBySearch(tasks, searchTerm);
+    return sortTasks(filteredTasks, assignees, sortOption);
+  }, [tasks, searchTerm, assignees, sortOption]);
 
   const selectedTask = useMemo(() => {
     return tasks.find((task) => task.id === selectedTaskId);
@@ -79,6 +82,8 @@ export function TaskDashboard() {
             onOpenTaskDetails={handleOpenTaskDetailsPanel}
             sortOption={sortOption}
             onSortChange={setSortOption}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
           />
         </div>
       </div>
