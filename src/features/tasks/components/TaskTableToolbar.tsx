@@ -1,10 +1,18 @@
-import { Search, ListFilter, ArrowUpDown, Plus } from "lucide-react";
+import { Search, ListFilter, Plus } from "lucide-react";
+import type { TaskSortOption } from "../types/taskControls.types";
+import { TaskSortControl } from "./TaskSortControl";
 
 interface TaskTableToolbarProps {
   onNewTask: () => void;
+  sortOption: TaskSortOption;
+  onSortChange: (sortOption: TaskSortOption) => void;
 }
 
-export function TaskTableToolbar({ onNewTask }: TaskTableToolbarProps) {
+export function TaskTableToolbar({
+  onNewTask,
+  sortOption,
+  onSortChange,
+}: TaskTableToolbarProps) {
   return (
     <div className="ml-auto flex items-center gap-3">
       <label className="flex w-64 items-center gap-2 border-b border-neutral-200 pb-1 transition focus-within:border-neutral-400">
@@ -27,14 +35,7 @@ export function TaskTableToolbar({ onNewTask }: TaskTableToolbarProps) {
         <ListFilter size={16} />
       </button>
 
-      <button
-        type="button"
-        disabled
-        className="rounded-md p-1.5 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900 disabled:cursor-not-allowed"
-        aria-label="Sort tasks"
-      >
-        <ArrowUpDown size={16} />
-      </button>
+      <TaskSortControl sortOption={sortOption} onSortChange={onSortChange} />
 
       <button
         type="button"

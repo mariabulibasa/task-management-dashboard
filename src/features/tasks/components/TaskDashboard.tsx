@@ -3,9 +3,13 @@ import { useTasks } from "../hooks/useTasks";
 import { useAssignees } from "../../assignees/hooks/useAssignees";
 import { TaskTable } from "./TaskTable";
 import { TaskDetailsPanel } from "./TaskDetailsPanel";
+import { findAssigneeById } from "../../assignees/utils/assignee.utils";
+import type { TaskSortOption } from "../types/taskControls.types";
+import { sortTasks } from "../utils/sortTasks";
 
 export function TaskDashboard() {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [sortOption, setSortOption] = useState<TaskSortOption>("default");
 
   const taskQuery = useTasks();
   const assigneeQuery = useAssignees();
@@ -13,15 +17,17 @@ export function TaskDashboard() {
   const tasks = taskQuery.data?.slice(5, 20) ?? [];
   const assignees = assigneeQuery.data ?? [];
 
+  const visibleTasks = useMemo(() => {
+    return sortTasks(tasks, assignees, sortOption);
+  }, [tasks, assignees, sortOption]);
+
   const selectedTask = useMemo(() => {
     return tasks.find((task) => task.id === selectedTaskId);
   }, [tasks, selectedTaskId]);
 
   const selectedAssignee = useMemo(() => {
     if (!selectedTask) return undefined;
-    return assignees.find(
-      (assignee) => assignee.id === selectedTask.assigneeId,
-    );
+    return findAssigneeById(assignees, selectedTask.assigneeId);
   }, [selectedTask, assignees]);
 
   if (taskQuery.isLoading || assigneeQuery.isLoading) {
@@ -67,10 +73,12 @@ export function TaskDashboard() {
 
         <div className="mt-6">
           <TaskTable
-            tasks={tasks}
+            tasks={visibleTasks}
             assignees={assignees}
             onNewTask={handleNewTask}
             onOpenTaskDetails={handleOpenTaskDetailsPanel}
+            sortOption={sortOption}
+            onSortChange={setSortOption}
           />
         </div>
       </div>

@@ -1,5 +1,7 @@
 import type { Assignee } from "../../assignees/types/assignees.types";
+import { findAssigneeById } from "../../assignees/utils/assignee.utils";
 import type { Task } from "../types/task.types";
+import type { TaskSortOption } from "../types/taskControls.types";
 import { TaskStatusBadge } from "./TaskStatusBadge";
 import { TaskTableToolbar } from "./TaskTableToolbar";
 import { Ellipsis } from "lucide-react";
@@ -9,6 +11,8 @@ interface TaskTableProps {
   assignees: Assignee[];
   onNewTask: () => void;
   onOpenTaskDetails: (taskId: string) => void;
+  sortOption: TaskSortOption;
+  onSortChange: (sortOption: TaskSortOption) => void;
 }
 
 export function TaskTable({
@@ -16,6 +20,8 @@ export function TaskTable({
   assignees,
   onNewTask,
   onOpenTaskDetails,
+  sortOption,
+  onSortChange,
 }: TaskTableProps) {
   return (
     <section className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
@@ -28,7 +34,11 @@ export function TaskTable({
             </p>
           </div>
 
-          <TaskTableToolbar onNewTask={onNewTask} />
+          <TaskTableToolbar
+            onNewTask={onNewTask}
+            sortOption={sortOption}
+            onSortChange={onSortChange}
+          />
         </div>
       </div>
 
@@ -48,9 +58,7 @@ export function TaskTable({
           </div>
         ) : (
           tasks.map((task) => {
-            const user = assignees.find(
-              (assignee) => task.assigneeId === assignee.id,
-            );
+            const user = findAssigneeById(assignees, task.assigneeId);
             return (
               <div
                 key={task.id}

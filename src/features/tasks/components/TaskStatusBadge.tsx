@@ -1,14 +1,9 @@
+import { TASK_STATUS_LABELS } from "../constants/task.constants";
 import type { TaskStatus } from "../types/task.types";
 
 interface TaskStatusBadgeProps {
   status: TaskStatus;
 }
-
-const statusLabel: Record<TaskStatus, string> = {
-  done: "Done",
-  "in progress": "In progress",
-  pending: "Not started",
-};
 
 const badgeClasses: Record<TaskStatus, string> = {
   done: "bg-green-100 text-green-700",
@@ -28,7 +23,7 @@ export function TaskStatusBadge({ status }: TaskStatusBadgeProps) {
       className={`inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium ${badgeClasses[status]}`}
     >
       <span className={`h-1.5 w-1.5 rounded-full ${dotClasses[status]}`} />
-      {statusLabel[status]}
+      {TASK_STATUS_LABELS[status]}
     </span>
   );
 }
