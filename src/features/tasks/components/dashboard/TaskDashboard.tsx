@@ -109,6 +109,7 @@ export function TaskDashboard() {
             onStatusFilterChange={setStatusFilter}
             assigneeFilter={assigneeFilter}
             onAssigneeFilterChange={setAssigneeFilter}
+            onUpdateTask={handleUpdateTask}
           />
         </div>
       </div>

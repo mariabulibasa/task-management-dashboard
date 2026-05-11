@@ -1,22 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Assignee } from "../../../assignees/types/assignees.types";
-import {
-  DEFAULT_TASK_DESCRIPTION,
-  TASK_STATUS_OPTIONS,
-} from "../../constants/task.constants";
+import { DEFAULT_TASK_DESCRIPTION } from "../../constants/task.constants";
 import type {
   CreateTaskInput,
   Task,
-  TaskStatus,
   UpdateTaskInput,
 } from "../../types/task.types";
 import { TaskPanelShell } from "./TaskPanelShell";
-import { TaskStatusBadge } from "../status/TaskStatusBadge";
-import { ChevronDown } from "lucide-react";
-import { DropdownMenu } from "../common/DropdownMenu";
-import { DropdownOption } from "../common/DropdownOption";
-import { SearchInput } from "../common/SearchInput";
-import { findAssigneeById } from "../../../assignees/utils/assignee.utils";
+import { TaskTitleField } from "./TaskTitleField";
+import { TaskDescriptionField } from "./TaskDescriptionField";
+import { TaskStatusPicker } from "../pickers/TaskStatusPicker";
+import { TaskAssigneePicker } from "../pickers/TaskAssigneePicker";
 
 interface TaskEditorPanelProps {
   mode: "create" | "edit";
@@ -77,30 +71,10 @@ export function TaskEditorPanel({
   );
 
   const [formInput, setFormInput] = useState(initialInput);
-  const [openDropdown, setOpenDropdown] = useState<
-    "assignee" | "status" | null
-  >(null);
-  const [assigneeSearchTerm, setAssigneeSearchTerm] = useState("");
 
   useEffect(() => {
     setFormInput(initialInput);
-    setOpenDropdown(null);
-    setAssigneeSearchTerm("");
   }, [initialInput]);
-
-  const selectedAssignee = findAssigneeById(assignees, formInput.assigneeId);
-
-  const visibleAssignees = useMemo(() => {
-    const normalizedSearchTerm = assigneeSearchTerm.trim().toLowerCase();
-
-    if (!normalizedSearchTerm) {
-      return assignees;
-    }
-
-    return assignees.filter((assignee) =>
-      assignee.name.toLowerCase().includes(normalizedSearchTerm),
-    );
-  }, [assignees, assigneeSearchTerm]);
 
   function updateField<Field extends keyof CreateTaskInput>(
     field: Field,
@@ -110,17 +84,6 @@ export function TaskEditorPanel({
       ...currentInput,
       [field]: value,
     }));
-  }
-
-  function handleSelectStatus(status: TaskStatus) {
-    updateField("status", status);
-    setOpenDropdown(null);
-  }
-
-  function handleSelectAssignee(assigneeId: string) {
-    updateField("assigneeId", assigneeId);
-    setAssigneeSearchTerm("");
-    setOpenDropdown(null);
   }
 
   function getCurrentInput(): CreateTaskInput {
@@ -163,133 +126,30 @@ export function TaskEditorPanel({
         mode === "create" ? "Close new task panel" : "Close task editor"
       }
     >
-      <input
-        type="text"
+      <TaskTitleField
         value={formInput.title}
-        onChange={(e) => updateField("title", e.target.value)}
-        placeholder="Task name"
-        className="mt-2 w-full bg-transparent text-3xl font-bold leading-tight tracking-tight text-neutral-900 outline-none placeholder:text-neutral-300"
+        onChange={(value) => updateField("title", value)}
       />
 
       <div className="mt-5 flex flex-wrap items-start gap-x-10 gap-y-4 text-sm">
-        <div className="relative">
-          <p className="mb-2 font-medium text-neutral-500">Assignee</p>
+        <TaskAssigneePicker
+          assignees={assignees}
+          value={formInput.assigneeId}
+          onChange={(value) => updateField("assigneeId", value)}
+        />
 
-          <button
-            type="button"
-            onClick={() =>
-              setOpenDropdown((currentDropdown) =>
-                currentDropdown === "assignee" ? null : "assignee",
-              )
-            }
-            className="group inline-flex min-h-7 items-center gap-2 rounded-md px-1.5 py-1 text-sm font-medium text-neutral-900 transition hover:bg-neutral-100"
-          >
-            {selectedAssignee ? (
-              <span>{selectedAssignee.name}</span>
-            ) : (
-              <span className="text-neutral-400">Empty</span>
-            )}
-
-            <ChevronDown
-              size={14}
-              className="text-neutral-400 opacity-0 transition group-hover:opacity-100"
-            />
-          </button>
-          <DropdownMenu
-            isOpen={openDropdown === "assignee"}
-            onClose={() => setOpenDropdown(null)}
-            widthClassName="w-72"
-            align="left"
-          >
-            <div className="mb-2">
-              <SearchInput
-                value={assigneeSearchTerm}
-                onValueChange={setAssigneeSearchTerm}
-                placeholder="Search assignee..."
-                variant="boxed"
-              />
-            </div>
-            <DropdownOption
-              selected={formInput.assigneeId === ""}
-              onClick={() => handleSelectAssignee("")}
-            >
-              No assignee
-            </DropdownOption>
-            <div className="max-h-56 overflow-y-auto">
-              {visibleAssignees.map((assignee) => (
-                <DropdownOption
-                  key={assignee.id}
-                  selected={formInput.assigneeId === assignee.id}
-                  onClick={() => handleSelectAssignee(assignee.id)}
-                >
-                  <span className="block truncate">{assignee.name}</span>
-                  <span className="block truncate text-xs text-neutral-400">
-                    {assignee.email}
-                  </span>
-                </DropdownOption>
-              ))}
-            </div>
-          </DropdownMenu>
-        </div>
-
-        <div className="relative">
-          <p className="mb-2 font-medium text-neutral-500">Status</p>
-
-          <button
-            type="button"
-            onClick={() =>
-              setOpenDropdown((currentDropdown) =>
-                currentDropdown === "status" ? null : "status",
-              )
-            }
-            className="group inline-flex min-h-7 items-center gap-2 rounded-md px-1.5 py-1 transition hover:bg-neutral-100"
-          >
-            <TaskStatusBadge status={formInput.status} />
-
-            <ChevronDown
-              size={14}
-              className="text-neutral-400 opacity-0 transition group-hover:opacity-100"
-            />
-          </button>
-
-          <DropdownMenu
-            isOpen={openDropdown === "status"}
-            onClose={() => setOpenDropdown(null)}
-            widthClassName="w-56"
-            align="left"
-          >
-            {TASK_STATUS_OPTIONS.map((statusOption) => (
-              <DropdownOption
-                key={statusOption}
-                selected={formInput.status === statusOption}
-                onClick={() => handleSelectStatus(statusOption)}
-              >
-                <TaskStatusBadge status={statusOption} />
-              </DropdownOption>
-            ))}
-          </DropdownMenu>
-        </div>
+        <TaskStatusPicker
+          value={formInput.status}
+          onChange={(value) => updateField("status", value)}
+        />
       </div>
+
       <div className="my-10 border-t border-neutral-200" />
 
-      <section>
-        <h3 className="text-2xl font-semibold tracking-tight text-neutral-900">
-          Task Description
-        </h3>
-
-        <textarea
-          value={formInput.description}
-          onChange={(e) => updateField("description", e.target.value)}
-          placeholder="Add details about this task..."
-          className="mt-5 min-h-48 w-full resize-none bg-transparent text-base leading-7 text-neutral-700 outline-none placeholder:text-neutral-300"
-        />
-      </section>
-
-      {mode === "create" && !formInput.title.trim() && (
-        <p className="mt-8 text-sm text-neutral-400">
-          Add a task name before closing the panel to create it.
-        </p>
-      )}
+      <TaskDescriptionField
+        value={formInput.description}
+        onChange={(value) => updateField("description", value)}
+      />
     </TaskPanelShell>
   );
 }
