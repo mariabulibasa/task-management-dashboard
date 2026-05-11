@@ -1,4 +1,4 @@
-import { Search, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import type {
   TaskSortOption,
   TaskStatusFilter,
@@ -6,6 +6,7 @@ import type {
 import { TaskSortControl } from "./TaskSortControl";
 import { TaskFilterControl } from "./TaskFilterControl";
 import type { Assignee } from "../../assignees/types/assignees.types";
+import { SearchInput } from "./SearchInput";
 
 interface TaskTableToolbarProps {
   assignees: Assignee[];
@@ -34,17 +35,11 @@ export function TaskTableToolbar({
 }: TaskTableToolbarProps) {
   return (
     <div className="ml-auto flex items-center gap-3">
-      <label className="flex w-64 items-center gap-2 border-b border-neutral-200 pb-1 transition focus-within:border-neutral-400">
-        <Search size={16} className="text-neutral-400" />
-
-        <input
-          type="text"
-          placeholder="Search tasks..."
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full bg-transparent text-sm text-neutral-700 outline-none placeholder:text-neutral-400"
-        />
-      </label>
+      <SearchInput
+        value={searchTerm}
+        onValueChange={onSearchChange}
+        placeholder="Search tasks..."
+      />
 
       <TaskFilterControl
         assignees={assignees}

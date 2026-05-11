@@ -1,12 +1,13 @@
 import { useMemo, useState } from "react";
 import type { TaskStatusFilter } from "../types/taskControls.types";
-import { ListFilter, Search, X } from "lucide-react";
+import { ListFilter, X } from "lucide-react";
 import {
   TASK_STATUS_FILTER_LABELS,
   TASK_STATUS_FILTER_OPTIONS,
 } from "../constants/task.constants";
 import type { Assignee } from "../../assignees/types/assignees.types";
 import { findAssigneeById } from "../../assignees/utils/assignee.utils";
+import { SearchInput } from "./SearchInput";
 
 interface TaskFilterControlProps {
   assignees: Assignee[];
@@ -73,13 +74,13 @@ export function TaskFilterControl({
         </button>
       )}
 
-      {hasActiveAssigneeFilter && (
+      {hasActiveAssigneeFilter && selectedAssignee && (
         <button
           type="button"
           onClick={handleClearAssigneeFilter}
           className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-700 transition hover:bg-neutral-200"
         >
-          {selectedAssignee?.name ?? "Assignee"}
+          {selectedAssignee.name}
           <X size={13} />
         </button>
       )}
@@ -128,19 +129,12 @@ export function TaskFilterControl({
                 Assignee
               </p>
 
-              <label className="mb-2 flex items-center gap-2 rounded-lg border border-neutral-200 px-3 py-2">
-                <Search size={15} className="text-neutral-400" />
-
-                <input
-                  type="text"
-                  placeholder="Search assignee..."
-                  value={assigneeSearchTerm}
-                  onChange={(event) =>
-                    setAssigneeSearchTerm(event.target.value)
-                  }
-                  className="w-full bg-transparent text-sm text-neutral-700 outline-none placeholder:text-neutral-400"
-                />
-              </label>
+              <SearchInput
+                value={assigneeSearchTerm}
+                onValueChange={setAssigneeSearchTerm}
+                placeholder="Search assignee..."
+                variant="boxed"
+              />
 
               <div className="max-h-48 overflow-y-auto">
                 <button
@@ -154,7 +148,6 @@ export function TaskFilterControl({
                 >
                   All assignees
                 </button>
-
                 {visibleAssignees.map((assignee) => (
                   <button
                     key={assignee.id}

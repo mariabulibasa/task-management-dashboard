@@ -1,5 +1,5 @@
 import type { Assignee } from "../../assignees/types/assignees.types";
-import { findAssigneeById } from "../../assignees/utils/assignee.utils";
+import { getAssigneeName } from "../../assignees/utils/assignee.utils";
 import type { Task } from "../types/task.types";
 import type {
   TaskSortOption,
@@ -73,12 +73,12 @@ export function TaskTable({
         {tasks.length === 0 ? (
           <div className="px-5 py-10 text-center">
             <p className="mt-1 text-sm text-neutral-500">
-              There are no tasks to display yet.
+              There are no tasks to display.
             </p>
           </div>
         ) : (
           tasks.map((task) => {
-            const user = findAssigneeById(assignees, task.assigneeId);
+            const username = getAssigneeName(assignees, task.assigneeId);
             return (
               <div
                 key={task.id}
@@ -116,7 +116,7 @@ export function TaskTable({
                 </div>
 
                 <div className="truncate text-sm text-neutral-600">
-                  {user?.name ?? ""}
+                  {username}
                 </div>
               </div>
             );
