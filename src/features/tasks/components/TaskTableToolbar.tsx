@@ -1,40 +1,55 @@
-import { Search, ListFilter, ArrowUpDown, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
+import type {
+  TaskSortOption,
+  TaskStatusFilter,
+} from "../types/taskControls.types";
+import { TaskSortControl } from "./TaskSortControl";
+import { TaskFilterControl } from "./TaskFilterControl";
+import type { Assignee } from "../../assignees/types/assignees.types";
+import { SearchInput } from "./SearchInput";
 
 interface TaskTableToolbarProps {
+  assignees: Assignee[];
   onNewTask: () => void;
+  sortOption: TaskSortOption;
+  onSortChange: (sortOption: TaskSortOption) => void;
+  searchTerm: string;
+  onSearchChange: (searchTerm: string) => void;
+  statusFilter: TaskStatusFilter;
+  onStatusFilterChange: (statusFilter: TaskStatusFilter) => void;
+  assigneeFilter: string;
+  onAssigneeFilterChange: (assigneeFilter: string) => void;
 }
 
-export function TaskTableToolbar({ onNewTask }: TaskTableToolbarProps) {
+export function TaskTableToolbar({
+  assignees,
+  onNewTask,
+  sortOption,
+  onSortChange,
+  searchTerm,
+  onSearchChange,
+  statusFilter,
+  onStatusFilterChange,
+  assigneeFilter,
+  onAssigneeFilterChange,
+}: TaskTableToolbarProps) {
   return (
     <div className="ml-auto flex items-center gap-3">
-      <label className="flex w-64 items-center gap-2 border-b border-neutral-200 pb-1 transition focus-within:border-neutral-400">
-        <Search size={16} className="text-neutral-400" />
+      <SearchInput
+        value={searchTerm}
+        onValueChange={onSearchChange}
+        placeholder="Search tasks..."
+      />
 
-        <input
-          type="text"
-          placeholder="Search tasks..."
-          disabled
-          className="w-full bg-transparent text-sm text-neutral-700 outline-none placeholder:text-neutral-400 disabled:cursor-not-allowed"
-        />
-      </label>
+      <TaskFilterControl
+        assignees={assignees}
+        statusFilter={statusFilter}
+        onStatusFilterChange={onStatusFilterChange}
+        assigneeFilter={assigneeFilter}
+        onAssigneeFilterChange={onAssigneeFilterChange}
+      />
 
-      <button
-        type="button"
-        disabled
-        className="rounded-md p-1.5 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900 disabled:cursor-not-allowed"
-        aria-label="Filter tasks"
-      >
-        <ListFilter size={16} />
-      </button>
-
-      <button
-        type="button"
-        disabled
-        className="rounded-md p-1.5 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900 disabled:cursor-not-allowed"
-        aria-label="Sort tasks"
-      >
-        <ArrowUpDown size={16} />
-      </button>
+      <TaskSortControl sortOption={sortOption} onSortChange={onSortChange} />
 
       <button
         type="button"
