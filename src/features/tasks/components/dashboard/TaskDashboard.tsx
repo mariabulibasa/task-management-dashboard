@@ -21,7 +21,8 @@ export function TaskDashboard() {
   const [assigneeFilter, setAssigneeFilter] = useState("all");
   const [editorMode, setEditorMode] = useState<TaskEditorMode>(null);
 
-  const { createTaskMutation, updateTaskMutation } = useTaskMutations();
+  const { createTaskMutation, updateTaskMutation, deleteTaskMutation } =
+    useTaskMutations();
 
   const taskQuery = useTasks();
   const assigneeQuery = useAssignees();
@@ -82,6 +83,10 @@ export function TaskDashboard() {
     updateTaskMutation.mutate(input);
   }
 
+  function handleDeleteTask(taskId: string) {
+    deleteTaskMutation.mutate(taskId);
+  }
+
   return (
     <main className="min-h-screen bg-neutral-100 p-6 text-neutral-900">
       <div className="mx-auto max-w-7xl">
@@ -110,6 +115,7 @@ export function TaskDashboard() {
             assigneeFilter={assigneeFilter}
             onAssigneeFilterChange={setAssigneeFilter}
             onUpdateTask={handleUpdateTask}
+            onDeleteTask={handleDeleteTask}
           />
         </div>
       </div>

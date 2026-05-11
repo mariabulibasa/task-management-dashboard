@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Task } from "../types/task.types";
-import { createTask, updateTask } from "../api/taskApi";
+import { createTask, deleteTask, updateTask } from "../api/taskApi";
 
 const TASKS_QUERY_KEY = ["tasks"];
 
@@ -29,5 +29,15 @@ export function useTaskMutations() {
     },
   });
 
-  return { createTaskMutation, updateTaskMutation };
+  const deleteTaskMutation = useMutation({
+    mutationFn: deleteTask,
+    onSuccess: (deletedTaskId) => {
+      queryClient.setQueryData<Task[]>(TASKS_QUERY_KEY, (currentTask) => {
+        if (!currentTask) return [];
+        return currentTask.filter((task) => task.id !== deletedTaskId);
+      });
+    },
+  });
+
+  return { createTaskMutation, updateTaskMutation, deleteTaskMutation };
 }

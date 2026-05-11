@@ -82,3 +82,24 @@ export async function updateTask(input: UpdateTaskInput): Promise<Task> {
 
   return updatedTask;
 }
+
+export async function deleteTask(taskId: string): Promise<string> {
+  if (taskId.startsWith("local-")) {
+    return taskId;
+  }
+
+  const response = await fetch(`${API_BASE_URL}/todos/${taskId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      return taskId;
+    }
+
+    throw new Error("Failed to delete task");
+  }
+
+  await response.json();
+  return taskId;
+}

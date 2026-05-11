@@ -21,6 +21,7 @@ interface TaskTableProps {
   assigneeFilter: string;
   onAssigneeFilterChange: (assigneeFilter: string) => void;
   onUpdateTask: (input: UpdateTaskInput) => void;
+  onDeleteTask: (taskId: string) => void;
 }
 
 export function TaskTable({
@@ -37,6 +38,7 @@ export function TaskTable({
   assigneeFilter,
   onAssigneeFilterChange,
   onUpdateTask,
+  onDeleteTask,
 }: TaskTableProps) {
   return (
     <section className="relative rounded-2xl border border-neutral-200 bg-white shadow-sm">
@@ -85,6 +87,7 @@ export function TaskTable({
                 assignees={assignees}
                 onOpenTaskDetails={onOpenTaskDetails}
                 onUpdateTask={onUpdateTask}
+                onDeleteTask={onDeleteTask}
               />
             );
           })
