@@ -1,10 +1,12 @@
 import { useState } from "react";
-import type { TaskSortOption } from "../types/taskControls.types";
+import type { TaskSortOption } from "../../types/taskControls.types";
 import { ArrowUpDown, X } from "lucide-react";
 import {
   TASK_SORT_LABELS,
   TASK_SORT_OPTIONS,
-} from "../constants/task.constants";
+} from "../../constants/task.constants";
+import { DropdownOption } from ".././common/DropdownOption";
+import { DropdownMenu } from ".././common/DropdownMenu";
 
 interface TaskSortControlProps {
   sortOption: TaskSortOption;
@@ -58,22 +60,22 @@ export function TaskSortControl({
             className="fixed inset-0 z-10 cursor-default"
           />
 
-          <div className="absolute right-0 top-full z-20 mt-2 w-56 rounded-xl border border-neutral-200 bg-white p-1 shadow-lg">
+          <DropdownMenu
+            isOpen={isOpen}
+            onClose={() => setIsOpen(false)}
+            widthClassName="w-56"
+            align="right"
+          >
             {TASK_SORT_OPTIONS.map((option) => (
-              <button
+              <DropdownOption
                 key={option}
-                type="button"
+                selected={sortOption === option}
                 onClick={() => handleSelectSort(option)}
-                className={`w-full rounded-lg px-3 py-2 text-left text-sm transition hover:bg-neutral-100 ${
-                  sortOption === option
-                    ? "bg-neutral-100 font-medium text-neutral-900"
-                    : "text-neutral-600"
-                }`}
               >
                 {TASK_SORT_LABELS[option]}
-              </button>
+              </DropdownOption>
             ))}
-          </div>
+          </DropdownMenu>
         </>
       )}
     </div>

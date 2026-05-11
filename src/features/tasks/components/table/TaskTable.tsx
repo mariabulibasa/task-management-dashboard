@@ -1,11 +1,11 @@
-import type { Assignee } from "../../assignees/types/assignees.types";
-import { getAssigneeName } from "../../assignees/utils/assignee.utils";
-import type { Task } from "../types/task.types";
+import type { Assignee } from "../../../assignees/types/assignees.types";
+import { getAssigneeName } from "../../../assignees/utils/assignee.utils";
+import type { Task } from "../../types/task.types";
 import type {
   TaskSortOption,
   TaskStatusFilter,
-} from "../types/taskControls.types";
-import { TaskStatusBadge } from "./TaskStatusBadge";
+} from "../../types/taskControls.types";
+import { TaskStatusBadge } from "../status/TaskStatusBadge";
 import { TaskTableToolbar } from "./TaskTableToolbar";
 import { Ellipsis } from "lucide-react";
 

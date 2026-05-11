@@ -1,15 +1,17 @@
 import { useMemo, useState } from "react";
-import { useTasks } from "../hooks/useTasks";
-import { useAssignees } from "../../assignees/hooks/useAssignees";
-import { TaskTable } from "./TaskTable";
-import { TaskDetailsPanel } from "./TaskDetailsPanel";
-import { findAssigneeById } from "../../assignees/utils/assignee.utils";
+import { useTasks } from "../../hooks/useTasks";
+import { useAssignees } from "../../../assignees/hooks/useAssignees";
+import { TaskTable } from "../table/TaskTable";
 import type {
+  TaskEditorMode,
   TaskSortOption,
   TaskStatusFilter,
-} from "../types/taskControls.types";
-import { sortTasks } from "../utils/sortTasks";
-import { filterTasks } from "../utils/filterTasks";
+} from "../../types/taskControls.types";
+import { sortTasks } from "../../utils/sortTasks";
+import { filterTasks } from "../../utils/filterTasks";
+import type { CreateTaskInput, UpdateTaskInput } from "../../types/task.types";
+import { TaskEditorPanel } from "../editor/TaskEditorPanel";
+import { useTaskMutations } from "../../hooks/useTaskMutations";
 
 export function TaskDashboard() {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
@@ -17,11 +19,14 @@ export function TaskDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<TaskStatusFilter>("all");
   const [assigneeFilter, setAssigneeFilter] = useState("all");
+  const [editorMode, setEditorMode] = useState<TaskEditorMode>(null);
+
+  const { createTaskMutation, updateTaskMutation } = useTaskMutations();
 
   const taskQuery = useTasks();
   const assigneeQuery = useAssignees();
 
-  const tasks = taskQuery.data?.slice(5, 20) ?? [];
+  const tasks = taskQuery.data ?? [];
   const assignees = assigneeQuery.data ?? [];
 
   const visibleTasks = useMemo(() => {
@@ -37,11 +42,6 @@ export function TaskDashboard() {
   const selectedTask = useMemo(() => {
     return tasks.find((task) => task.id === selectedTaskId);
   }, [tasks, selectedTaskId]);
-
-  const selectedAssignee = useMemo(() => {
-    if (!selectedTask) return undefined;
-    return findAssigneeById(assignees, selectedTask.assigneeId);
-  }, [selectedTask, assignees]);
 
   if (taskQuery.isLoading || assigneeQuery.isLoading) {
     return (
@@ -59,16 +59,27 @@ export function TaskDashboard() {
     );
   }
 
-  function handleOpenTaskDetailsPanel(taskId: string) {
+  function handleOpenEditor(taskId: string) {
     setSelectedTaskId(taskId);
+    setEditorMode("edit");
   }
 
-  function handleCloseTaskDetailsPanel() {
+  function handleCloseEditor() {
+    setEditorMode(null);
     setSelectedTaskId(null);
   }
 
   function handleNewTask() {
-    //Implement functionality for adding new task
+    setSelectedTaskId(null);
+    setEditorMode("create");
+  }
+
+  function handleCreateTask(input: CreateTaskInput) {
+    createTaskMutation.mutate(input);
+  }
+
+  function handleUpdateTask(input: UpdateTaskInput) {
+    updateTaskMutation.mutate(input);
   }
 
   return (
@@ -89,7 +100,7 @@ export function TaskDashboard() {
             tasks={visibleTasks}
             assignees={assignees}
             onNewTask={handleNewTask}
-            onOpenTaskDetails={handleOpenTaskDetailsPanel}
+            onOpenTaskDetails={handleOpenEditor}
             sortOption={sortOption}
             onSortChange={setSortOption}
             searchTerm={searchTerm}
@@ -102,11 +113,16 @@ export function TaskDashboard() {
         </div>
       </div>
 
-      <TaskDetailsPanel
-        task={selectedTask}
-        assignee={selectedAssignee}
-        onClose={handleCloseTaskDetailsPanel}
-      />
+      {editorMode && (
+        <TaskEditorPanel
+          mode={editorMode}
+          task={editorMode === "edit" ? selectedTask : undefined}
+          assignees={assignees}
+          onClose={handleCloseEditor}
+          onCreate={handleCreateTask}
+          onUpdate={handleUpdateTask}
+        ></TaskEditorPanel>
+      )}
     </main>
   );
 }
