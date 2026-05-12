@@ -1,27 +1,32 @@
 import { useMemo, useState } from "react";
-import { useTasks } from "../hooks/useTasks";
-import { useAssignees } from "../../assignees/hooks/useAssignees";
-import { TaskTable } from "./TaskTable";
-import { TaskDetailsPanel } from "./TaskDetailsPanel";
-import { findAssigneeById } from "../../assignees/utils/assignee.utils";
+import { useTasks } from "../../hooks/useTasks";
+import { useAssignees } from "../../../assignees/hooks/useAssignees";
+import { TaskTable } from "../table/TaskTable";
 import type {
+  EditorState,
   TaskSortOption,
   TaskStatusFilter,
-} from "../types/taskControls.types";
-import { sortTasks } from "../utils/sortTasks";
-import { filterTasks } from "../utils/filterTasks";
+} from "../../types/taskControls.types";
+import { sortTasks } from "../../utils/sortTasks";
+import { filterTasks } from "../../utils/filterTasks";
+import type { CreateTaskInput, UpdateTaskInput } from "../../types/task.types";
+import { TaskEditorPanel } from "../editor/TaskEditorPanel";
+import { useTaskMutations } from "../../hooks/useTaskMutations";
 
 export function TaskDashboard() {
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [sortOption, setSortOption] = useState<TaskSortOption>("default");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<TaskStatusFilter>("all");
   const [assigneeFilter, setAssigneeFilter] = useState("all");
+  const [editorState, setEditorState] = useState<EditorState>({ mode: null });
+
+  const { createTaskMutation, updateTaskMutation, deleteTaskMutation } =
+    useTaskMutations();
 
   const taskQuery = useTasks();
   const assigneeQuery = useAssignees();
 
-  const tasks = taskQuery.data?.slice(5, 20) ?? [];
+  const tasks = taskQuery.data?.slice(0, 20) ?? [];
   const assignees = assigneeQuery.data ?? [];
 
   const visibleTasks = useMemo(() => {
@@ -35,13 +40,15 @@ export function TaskDashboard() {
   }, [tasks, searchTerm, statusFilter, assigneeFilter, assignees, sortOption]);
 
   const selectedTask = useMemo(() => {
-    return tasks.find((task) => task.id === selectedTaskId);
-  }, [tasks, selectedTaskId]);
+    if (editorState.mode !== "edit") return undefined;
 
-  const selectedAssignee = useMemo(() => {
-    if (!selectedTask) return undefined;
-    return findAssigneeById(assignees, selectedTask.assigneeId);
-  }, [selectedTask, assignees]);
+    return tasks.find((task) => task.id === editorState.taskId);
+  }, [tasks, editorState]);
+
+  const emptyTasksMessage =
+    tasks.length === 0
+      ? "There are no tasks to display."
+      : "No tasks match the current filters.";
 
   if (taskQuery.isLoading || assigneeQuery.isLoading) {
     return (
@@ -59,16 +66,28 @@ export function TaskDashboard() {
     );
   }
 
-  function handleOpenTaskDetailsPanel(taskId: string) {
-    setSelectedTaskId(taskId);
+  function handleOpenEditor(taskId: string) {
+    setEditorState({ mode: "edit", taskId });
   }
 
-  function handleCloseTaskDetailsPanel() {
-    setSelectedTaskId(null);
+  function handleCloseEditor() {
+    setEditorState({ mode: null });
   }
 
   function handleNewTask() {
-    //Implement functionality for adding new task
+    setEditorState({ mode: "create" });
+  }
+
+  function handleCreateTask(input: CreateTaskInput) {
+    createTaskMutation.mutate(input);
+  }
+
+  function handleUpdateTask(input: UpdateTaskInput) {
+    updateTaskMutation.mutate(input);
+  }
+
+  function handleDeleteTask(taskId: string) {
+    deleteTaskMutation.mutate(taskId);
   }
 
   return (
@@ -88,8 +107,9 @@ export function TaskDashboard() {
           <TaskTable
             tasks={visibleTasks}
             assignees={assignees}
+            emptyMessage={emptyTasksMessage}
             onNewTask={handleNewTask}
-            onOpenTaskDetails={handleOpenTaskDetailsPanel}
+            onOpenTaskDetails={handleOpenEditor}
             sortOption={sortOption}
             onSortChange={setSortOption}
             searchTerm={searchTerm}
@@ -98,15 +118,22 @@ export function TaskDashboard() {
             onStatusFilterChange={setStatusFilter}
             assigneeFilter={assigneeFilter}
             onAssigneeFilterChange={setAssigneeFilter}
+            onUpdateTask={handleUpdateTask}
+            onDeleteTask={handleDeleteTask}
           />
         </div>
       </div>
 
-      <TaskDetailsPanel
-        task={selectedTask}
-        assignee={selectedAssignee}
-        onClose={handleCloseTaskDetailsPanel}
-      />
+      {editorState.mode && (
+        <TaskEditorPanel
+          mode={editorState.mode}
+          task={editorState.mode === "edit" ? selectedTask : undefined}
+          assignees={assignees}
+          onClose={handleCloseEditor}
+          onCreate={handleCreateTask}
+          onUpdate={handleUpdateTask}
+        ></TaskEditorPanel>
+      )}
     </main>
   );
 }

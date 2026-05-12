@@ -2,11 +2,11 @@ import { Plus } from "lucide-react";
 import type {
   TaskSortOption,
   TaskStatusFilter,
-} from "../types/taskControls.types";
-import { TaskSortControl } from "./TaskSortControl";
-import { TaskFilterControl } from "./TaskFilterControl";
-import type { Assignee } from "../../assignees/types/assignees.types";
-import { SearchInput } from "./SearchInput";
+} from "../../types/taskControls.types";
+import { TaskSortControl } from "../controls/TaskSortControl";
+import { TaskFilterControl } from "../controls/TaskFilterControl";
+import type { Assignee } from "../../../assignees/types/assignees.types";
+import { SearchInput } from "../common/./SearchInput";
 
 interface TaskTableToolbarProps {
   assignees: Assignee[];

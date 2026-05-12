@@ -1,4 +1,4 @@
-import { TaskDashboard } from "./features/tasks/components/TaskDashboard";
+import { TaskDashboard } from "./features/tasks/components/dashboard/TaskDashboard";
 
 function App() {
   return <TaskDashboard />;

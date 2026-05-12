@@ -1,5 +1,5 @@
-import { TASK_STATUS_LABELS } from "../constants/task.constants";
-import type { TaskStatus } from "../types/task.types";
+import { TASK_STATUS_LABELS } from "../../constants/task.constants";
+import type { TaskStatus } from "../../types/task.types";
 
 interface TaskStatusBadgeProps {
   status: TaskStatus;

@@ -43,3 +43,9 @@ export const TASK_STATUS_FILTER_LABELS: Record<TaskStatusFilter, string> = {
   "in progress": "In progress",
   pending: "Not started",
 };
+
+export const TASK_STATUS_OPTIONS: TaskStatus[] = [
+  "pending",
+  "in progress",
+  "done",
+];
