@@ -5,8 +5,8 @@ import {
   TASK_SORT_LABELS,
   TASK_SORT_OPTIONS,
 } from "../../constants/task.constants";
-import { DropdownOption } from ".././common/DropdownOption";
-import { DropdownMenu } from ".././common/DropdownMenu";
+import { DropdownOption } from "../common/DropdownOption";
+import { DropdownMenu } from "../common/DropdownMenu";
 
 interface TaskSortControlProps {
   sortOption: TaskSortOption;
@@ -51,33 +51,22 @@ export function TaskSortControl({
         <ArrowUpDown size={16} />
       </button>
 
-      {isOpen && (
-        <>
-          <button
-            type="button"
-            aria-label="Close sort dropdown"
-            onClick={() => setIsOpen(false)}
-            className="fixed inset-0 z-10 cursor-default"
-          />
-
-          <DropdownMenu
-            isOpen={isOpen}
-            onClose={() => setIsOpen(false)}
-            widthClassName="w-56"
-            align="right"
+      <DropdownMenu
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        widthClassName="w-56"
+        align="right"
+      >
+        {TASK_SORT_OPTIONS.map((option) => (
+          <DropdownOption
+            key={option}
+            selected={sortOption === option}
+            onClick={() => handleSelectSort(option)}
           >
-            {TASK_SORT_OPTIONS.map((option) => (
-              <DropdownOption
-                key={option}
-                selected={sortOption === option}
-                onClick={() => handleSelectSort(option)}
-              >
-                {TASK_SORT_LABELS[option]}
-              </DropdownOption>
-            ))}
-          </DropdownMenu>
-        </>
-      )}
+            {TASK_SORT_LABELS[option]}
+          </DropdownOption>
+        ))}
+      </DropdownMenu>
     </div>
   );
 }

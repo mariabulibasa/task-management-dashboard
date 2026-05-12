@@ -3,7 +3,7 @@ import { useState } from "react";
 import { DropdownMenu } from "../common/DropdownMenu";
 import { DropdownOption } from "../common/DropdownOption";
 
-interface TaskRowActionsMenuProps {
+interface TaskRowActionMenuProps {
   onDeleteTask: () => void;
 }
 
@@ -14,7 +14,7 @@ interface TaskRowAction {
   onClick: () => void;
 }
 
-export function TaskRowActionMenu({ onDeleteTask }: TaskRowActionsMenuProps) {
+export function TaskRowActionMenu({ onDeleteTask }: TaskRowActionMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const actions: TaskRowAction[] = [
@@ -27,8 +27,8 @@ export function TaskRowActionMenu({ onDeleteTask }: TaskRowActionsMenuProps) {
   ];
 
   function handleSelectAction(action: () => void) {
-    action();
     setIsOpen(false);
+    action();
   }
 
   return (

@@ -3,7 +3,7 @@ import { useTasks } from "../../hooks/useTasks";
 import { useAssignees } from "../../../assignees/hooks/useAssignees";
 import { TaskTable } from "../table/TaskTable";
 import type {
-  TaskEditorMode,
+  EditorState,
   TaskSortOption,
   TaskStatusFilter,
 } from "../../types/taskControls.types";
@@ -14,12 +14,11 @@ import { TaskEditorPanel } from "../editor/TaskEditorPanel";
 import { useTaskMutations } from "../../hooks/useTaskMutations";
 
 export function TaskDashboard() {
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [sortOption, setSortOption] = useState<TaskSortOption>("default");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<TaskStatusFilter>("all");
   const [assigneeFilter, setAssigneeFilter] = useState("all");
-  const [editorMode, setEditorMode] = useState<TaskEditorMode>(null);
+  const [editorState, setEditorState] = useState<EditorState>({ mode: null });
 
   const { createTaskMutation, updateTaskMutation, deleteTaskMutation } =
     useTaskMutations();
@@ -27,7 +26,7 @@ export function TaskDashboard() {
   const taskQuery = useTasks();
   const assigneeQuery = useAssignees();
 
-  const tasks = taskQuery.data ?? [];
+  const tasks = taskQuery.data?.slice(0, 20) ?? [];
   const assignees = assigneeQuery.data ?? [];
 
   const visibleTasks = useMemo(() => {
@@ -41,8 +40,15 @@ export function TaskDashboard() {
   }, [tasks, searchTerm, statusFilter, assigneeFilter, assignees, sortOption]);
 
   const selectedTask = useMemo(() => {
-    return tasks.find((task) => task.id === selectedTaskId);
-  }, [tasks, selectedTaskId]);
+    if (editorState.mode !== "edit") return undefined;
+
+    return tasks.find((task) => task.id === editorState.taskId);
+  }, [tasks, editorState]);
+
+  const emptyTasksMessage =
+    tasks.length === 0
+      ? "There are no tasks to display."
+      : "No tasks match the current filters.";
 
   if (taskQuery.isLoading || assigneeQuery.isLoading) {
     return (
@@ -61,18 +67,15 @@ export function TaskDashboard() {
   }
 
   function handleOpenEditor(taskId: string) {
-    setSelectedTaskId(taskId);
-    setEditorMode("edit");
+    setEditorState({ mode: "edit", taskId });
   }
 
   function handleCloseEditor() {
-    setEditorMode(null);
-    setSelectedTaskId(null);
+    setEditorState({ mode: null });
   }
 
   function handleNewTask() {
-    setSelectedTaskId(null);
-    setEditorMode("create");
+    setEditorState({ mode: "create" });
   }
 
   function handleCreateTask(input: CreateTaskInput) {
@@ -104,6 +107,7 @@ export function TaskDashboard() {
           <TaskTable
             tasks={visibleTasks}
             assignees={assignees}
+            emptyMessage={emptyTasksMessage}
             onNewTask={handleNewTask}
             onOpenTaskDetails={handleOpenEditor}
             sortOption={sortOption}
@@ -120,10 +124,10 @@ export function TaskDashboard() {
         </div>
       </div>
 
-      {editorMode && (
+      {editorState.mode && (
         <TaskEditorPanel
-          mode={editorMode}
-          task={editorMode === "edit" ? selectedTask : undefined}
+          mode={editorState.mode}
+          task={editorState.mode === "edit" ? selectedTask : undefined}
           assignees={assignees}
           onClose={handleCloseEditor}
           onCreate={handleCreateTask}

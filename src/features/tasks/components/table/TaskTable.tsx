@@ -10,6 +10,7 @@ import { TaskTableToolbar } from "./TaskTableToolbar";
 interface TaskTableProps {
   tasks: Task[];
   assignees: Assignee[];
+  emptyMessage: string;
   onNewTask: () => void;
   onOpenTaskDetails: (taskId: string) => void;
   sortOption: TaskSortOption;
@@ -27,6 +28,7 @@ interface TaskTableProps {
 export function TaskTable({
   tasks,
   assignees,
+  emptyMessage,
   onNewTask,
   onOpenTaskDetails,
   sortOption,
@@ -74,9 +76,7 @@ export function TaskTable({
       <div className="divide-y divide-neutral-100">
         {tasks.length === 0 ? (
           <div className="px-5 py-10 text-center">
-            <p className="mt-1 text-sm text-neutral-500">
-              There are no tasks to display.
-            </p>
+            <p className="mt-1 text-sm text-neutral-500">{emptyMessage} </p>
           </div>
         ) : (
           tasks.map((task) => {

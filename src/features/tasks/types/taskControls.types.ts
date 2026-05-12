@@ -2,7 +2,10 @@ import type { TaskStatus } from "./task.types";
 
 export type TaskStatusFilter = TaskStatus | "all";
 
-export type TaskEditorMode = "create" | "edit" | null;
+export type EditorState =
+  | { mode: null }
+  | { mode: "create" }
+  | { mode: "edit"; taskId: string };
 
 export type TaskSortOption =
   | "default"

@@ -3,7 +3,7 @@ import { EditableTaskTitleCell } from "./EditableTaskTitleCell";
 import type { Assignee } from "../../../assignees/types/assignees.types";
 import { TaskAssigneePicker } from "../pickers/TaskAssigneePicker";
 import { TaskStatusPicker } from "../pickers/TaskStatusPicker";
-import { TaskRowActionMenu } from "./TaskRowActionsMenu";
+import { TaskRowActionMenu } from "./TaskRowActionMenu";
 
 interface TaskTableRowProps {
   task: Task;

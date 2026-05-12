@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import type { Assignee } from "../../../assignees/types/assignees.types";
 import { findAssigneeById } from "../../../assignees/utils/assignee.utils";
 import { DropdownMenu } from "../common/DropdownMenu";
 import { DropdownOption } from "../common/DropdownOption";
 import { SearchInput } from "../common/SearchInput";
+import { useFilteredAssignees } from "../../hooks/useFilteredAssignees";
 
 interface TaskAssigneePickerProps {
   assignees: Assignee[];
@@ -22,26 +23,24 @@ export function TaskAssigneePicker({
   dropdownAlign = "left",
 }: TaskAssigneePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
 
   const selectedAssignee = findAssigneeById(assignees, value);
 
-  const visibleAssignees = useMemo(() => {
-    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+  const {
+    assigneeSearchTerm,
+    setAssigneeSearchTerm,
+    visibleAssignees,
+    clearAssigneeSearch,
+  } = useFilteredAssignees(assignees);
 
-    if (!normalizedSearchTerm) {
-      return assignees;
-    }
-
-    return assignees.filter((assignee) =>
-      assignee.name.toLowerCase().includes(normalizedSearchTerm),
-    );
-  }, [assignees, searchTerm]);
+  function handleCloseDropdown() {
+    clearAssigneeSearch();
+    setIsOpen(false);
+  }
 
   function handleSelectAssignee(assigneeId: string) {
+    handleCloseDropdown();
     onChange(assigneeId);
-    setSearchTerm("");
-    setIsOpen(false);
   }
 
   return (
@@ -69,14 +68,14 @@ export function TaskAssigneePicker({
 
       <DropdownMenu
         isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        onClose={handleCloseDropdown}
         widthClassName="w-72"
         align={dropdownAlign}
       >
         <div className="mb-2">
           <SearchInput
-            value={searchTerm}
-            onValueChange={setSearchTerm}
+            value={assigneeSearchTerm}
+            onValueChange={setAssigneeSearchTerm}
             placeholder="Search assignee..."
             variant="boxed"
           />

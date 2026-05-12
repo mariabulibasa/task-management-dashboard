@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { TaskStatusFilter } from "../../types/taskControls.types";
 import { ListFilter, X } from "lucide-react";
 import {
@@ -8,9 +8,11 @@ import {
 import type { Assignee } from "../../../assignees/types/assignees.types";
 import { findAssigneeById } from "../../../assignees/utils/assignee.utils";
 import { SearchInput } from "../common/SearchInput";
-import { DropdownMenu } from ".././common/DropdownMenu";
-import { DropdownOption } from ".././common/DropdownOption";
+import { DropdownMenu } from "../common/DropdownMenu";
+import { DropdownOption } from "../common/DropdownOption";
 import { TaskStatusBadge } from "../status/TaskStatusBadge";
+import { useFilteredAssignees } from "../../hooks/useFilteredAssignees";
+import { DropdownSectionTitle } from "../common/DropdownSectionTitle";
 
 interface TaskFilterControlProps {
   assignees: Assignee[];
@@ -28,25 +30,19 @@ export function TaskFilterControl({
   onAssigneeFilterChange,
 }: TaskFilterControlProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [assigneeSearchTerm, setAssigneeSearchTerm] = useState("");
   const selectedAssignee = findAssigneeById(assignees, assigneeFilter);
   const hasActiveAssigneeFilter = assigneeFilter !== "all";
 
-  const visibleAssignees = useMemo(() => {
-    const normalizedSearchTerm = assigneeSearchTerm.trim().toLowerCase();
-
-    if (!normalizedSearchTerm) {
-      return assignees;
-    }
-
-    return assignees.filter((assignee) =>
-      assignee.name.toLowerCase().includes(normalizedSearchTerm),
-    );
-  }, [assignees, assigneeSearchTerm]);
+  const {
+    assigneeSearchTerm,
+    setAssigneeSearchTerm,
+    visibleAssignees,
+    clearAssigneeSearch,
+  } = useFilteredAssignees(assignees);
 
   function handleSelectAssigneeFilter(selectedAssigneeId: string) {
     onAssigneeFilterChange(selectedAssigneeId);
-    setAssigneeSearchTerm("");
+    clearAssigneeSearch();
     setIsOpen(false);
   }
 
@@ -103,9 +99,7 @@ export function TaskFilterControl({
         align="right"
       >
         <div>
-          <p className="px-2 py-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
-            Status
-          </p>
+          <DropdownSectionTitle>Status</DropdownSectionTitle>
 
           {TASK_STATUS_FILTER_OPTIONS.map((option) => (
             <DropdownOption
@@ -123,9 +117,7 @@ export function TaskFilterControl({
         </div>
 
         <div className="mt-3 border-t border-neutral-100 pt-3">
-          <p className="px-2 py-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
-            Assignee
-          </p>
+          <DropdownSectionTitle>Assignee</DropdownSectionTitle>
 
           <div className="mb-2">
             <SearchInput

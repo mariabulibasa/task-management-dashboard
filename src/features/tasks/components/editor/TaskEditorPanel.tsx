@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Assignee } from "../../../assignees/types/assignees.types";
-import { DEFAULT_TASK_DESCRIPTION } from "../../constants/task.constants";
 import type {
   CreateTaskInput,
   Task,
@@ -42,18 +41,18 @@ function getInitialTaskInput(
 
   return {
     title: "",
-    description: DEFAULT_TASK_DESCRIPTION,
+    description: "Provide an overview of the task and related details.",
     status: "pending",
     assigneeId: "",
   };
 }
 
 function hasTaskInputChanged(
-  curentInput: CreateTaskInput,
+  currentInput: CreateTaskInput,
   initialInput: CreateTaskInput,
 ): boolean {
   return taskInputFields.some(
-    (field) => curentInput[field] !== initialInput[field],
+    (field) => currentInput[field] !== initialInput[field],
   );
 }
 

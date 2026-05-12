@@ -11,13 +11,15 @@ export function EditableTaskTitleCell({
 }: EditableTaskTitleCellProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [draftTitle, setDraftTitle] = useState(title);
+  const [visibleTitle, setVisibleTitle] = useState(title);
 
   useEffect(() => {
     setDraftTitle(title);
+    setVisibleTitle(title);
   }, [title]);
 
   function startEditing() {
-    setDraftTitle(title);
+    setDraftTitle(visibleTitle);
     setIsEditing(true);
   }
 
@@ -25,12 +27,13 @@ export function EditableTaskTitleCell({
     const trimmedTitle = draftTitle.trim();
 
     if (!trimmedTitle) {
-      setDraftTitle(title);
+      setDraftTitle(visibleTitle);
       setIsEditing(false);
       return;
     }
 
-    if (trimmedTitle !== title) {
+    if (trimmedTitle !== visibleTitle) {
+      setVisibleTitle(trimmedTitle);
       onSave(trimmedTitle);
     }
 
@@ -38,7 +41,7 @@ export function EditableTaskTitleCell({
   }
 
   function cancelEditing() {
-    setDraftTitle(title);
+    setDraftTitle(visibleTitle);
     setIsEditing(false);
   }
 
@@ -48,14 +51,14 @@ export function EditableTaskTitleCell({
         autoFocus
         type="text"
         value={draftTitle}
-        onChange={(event) => setDraftTitle(event.target.value)}
+        onChange={(e) => setDraftTitle(e.target.value)}
         onBlur={saveTitle}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
             saveTitle();
           }
 
-          if (event.key === "Escape") {
+          if (e.key === "Escape") {
             cancelEditing();
           }
         }}
@@ -68,9 +71,9 @@ export function EditableTaskTitleCell({
     <button
       type="button"
       onClick={startEditing}
-      className="block w-full truncate text-left font-medium text-neutral-900 cursor-text"
+      className="block w-full cursor-text truncate text-left font-medium text-neutral-900"
     >
-      {title}
+      {visibleTitle}
     </button>
   );
 }

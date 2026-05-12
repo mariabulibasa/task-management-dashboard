@@ -36,6 +36,7 @@ export async function createTask(input: CreateTaskInput): Promise<Task> {
 
   await response.json();
 
+  // DummyJSON does not persist new tasks, so we use a local ID
   return {
     id: `local-${crypto.randomUUID()}`,
     title: input.title,
@@ -54,6 +55,7 @@ export async function updateTask(input: UpdateTaskInput): Promise<Task> {
     assigneeId: input.assigneeId,
   };
 
+  // Local tasks only exist in frontend state
   if (input.id.startsWith("local-")) {
     return updatedTask;
   }
@@ -71,6 +73,7 @@ export async function updateTask(input: UpdateTaskInput): Promise<Task> {
   });
 
   if (!response.ok) {
+    // DummyJSON may not recognize non-persisted tasks
     if (response.status === 404) {
       return updatedTask;
     }
