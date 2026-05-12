@@ -34,7 +34,7 @@ export function TaskTableToolbar({
   onAssigneeFilterChange,
 }: TaskTableToolbarProps) {
   return (
-    <div className="ml-auto flex items-center gap-3">
+    <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:ml-auto lg:w-auto">
       <SearchInput
         value={searchTerm}
         onValueChange={onSearchChange}

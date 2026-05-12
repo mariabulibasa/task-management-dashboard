@@ -45,7 +45,7 @@ export function TaskTable({
   return (
     <section className="relative rounded-2xl border border-neutral-200 bg-white shadow-sm">
       <div className="border-b border-neutral-200 px-5 py-4">
-        <div className="flex items-center justify-between gap-8">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="shrink-0">
             <h2 className="text-lg font-semibold text-neutral-900">Tasks</h2>
             <p className="mt-1 text-sm text-neutral-500">
