@@ -12,6 +12,7 @@ import { filterTasks } from "../../utils/filterTasks";
 import type { CreateTaskInput, UpdateTaskInput } from "../../types/task.types";
 import { TaskEditorPanel } from "../editor/TaskEditorPanel";
 import { useTaskMutations } from "../../hooks/useTaskMutations";
+import { CheckCircle } from "lucide-react";
 
 export function TaskDashboard() {
   const [sortOption, setSortOption] = useState<TaskSortOption>("default");
@@ -94,9 +95,13 @@ export function TaskDashboard() {
     <main className="min-h-screen bg-neutral-100 p-6 text-neutral-900">
       <div className="mx-auto max-w-7xl">
         <header className="mb-8">
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-            Task Management Dashboard
-          </h1>
+          <div className="mt-2 flex items-center gap-3">
+            <CheckCircle size={28} className="text-emerald-600" />
+
+            <h1 className="text-3xl font-semibold tracking-tight">
+              Task Management Dashboard
+            </h1>
+          </div>
 
           <p className="mt-2 max-w-2xl text-sm text-neutral-600">
             Manage, track and inspect tasks.

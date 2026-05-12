@@ -37,7 +37,11 @@ export function TaskStatusPicker({
 
         <ChevronDown
           size={14}
-          className="text-neutral-400 opacity-0 transition group-hover:opacity-100"
+          className={`transition ${
+            isOpen
+              ? "text-neutral-700 opacity-100"
+              : "text-neutral-400 opacity-0 group-hover:opacity-100"
+          }`}
         />
       </button>
 

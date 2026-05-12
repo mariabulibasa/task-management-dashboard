@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../../../config";
+import { getStoredTasks, saveStoredTasks } from "../storage/taskStorage";
 import type {
   CreateTaskInput,
   Task,
@@ -8,13 +9,19 @@ import type { DummyJsonTodosResponse } from "./dummyJsonTask.types";
 import { mapDummyJsonTodoToTask } from "./taskMappers";
 
 export async function getTasks(): Promise<Task[]> {
+  const storedTasks = getStoredTasks();
+  if (storedTasks) return storedTasks;
+
   const response = await fetch(`${API_BASE_URL}/todos?limit=0`);
 
   if (!response.ok) throw new Error("Failed to fetch tasks");
 
   const data: DummyJsonTodosResponse = await response.json();
 
-  return data.todos.map(mapDummyJsonTodoToTask);
+  const tasks = data.todos.map(mapDummyJsonTodoToTask);
+
+  saveStoredTasks(tasks);
+  return tasks;
 }
 
 export async function createTask(input: CreateTaskInput): Promise<Task> {
