@@ -54,6 +54,7 @@ export function TaskTableRow({
         showLabel={false}
         onChange={(assigneeId) => onUpdateTask({ ...task, assigneeId })}
         dropdownAlign="right"
+        emptyLabel=""
       />
     </div>
   );

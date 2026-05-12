@@ -13,6 +13,7 @@ interface TaskAssigneePickerProps {
   onChange: (assigneeId: string) => void;
   showLabel?: boolean;
   dropdownAlign?: "left" | "right";
+  emptyLabel?: string;
 }
 
 export function TaskAssigneePicker({
@@ -21,6 +22,7 @@ export function TaskAssigneePicker({
   onChange,
   showLabel = true,
   dropdownAlign = "left",
+  emptyLabel = "Empty",
 }: TaskAssigneePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -57,12 +59,16 @@ export function TaskAssigneePicker({
         {selectedAssignee ? (
           <span>{selectedAssignee.name}</span>
         ) : (
-          <span className="text-neutral-400">Empty</span>
+          <span className="text-neutral-400">{emptyLabel}</span>
         )}
 
         <ChevronDown
           size={14}
-          className="text-neutral-400 opacity-0 transition group-hover:opacity-100"
+          className={`transition ${
+            isOpen
+              ? "text-neutral-700 opacity-100"
+              : "text-neutral-400 opacity-0 group-hover:opacity-100"
+          }`}
         />
       </button>
 

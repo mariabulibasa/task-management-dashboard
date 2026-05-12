@@ -45,7 +45,11 @@ export function TaskSortControl({
       <button
         type="button"
         onClick={() => setIsOpen((currentValue) => !currentValue)}
-        className="rounded-md p-1.5 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900"
+        className={`rounded-md p-1.5 transition ${
+          isOpen
+            ? "bg-neutral-100 text-neutral-900"
+            : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
+        }`}
         aria-label="Sort tasks"
       >
         <ArrowUpDown size={16} />
